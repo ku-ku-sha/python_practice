@@ -1,6 +1,7 @@
 from typing import Union
 import os
 
+
 #
 # Встроенные функции python
 #
@@ -56,7 +57,7 @@ def get_file_name(n: str) -> Union[str, int]:
         return -1
 
 
-def swap_min_max(n: list) -> Union[int,list] :
+def swap_min_max(n: list) -> Union[int, list]:
     '''Поменять местами самый большой и самый маленький элементы списка
     Функция позволяет обрабатывать списки строк и списки чисел'''
     if isinstance(n, list):
@@ -84,6 +85,7 @@ def swap_min_max(n: list) -> Union[int,list] :
     else:
         print('Invalid input type (List required)')
         return -1
+
 
 def most_expensive_product(n: list):
     ''' Дан список словарей: [{“наименование”: “Спички”, “цена”: 1},  {“наименование”: “Лук”, “цена”: 37},  … , {“наименование”: str, “цена”: int}]
@@ -122,8 +124,6 @@ def func_time(func):
     return inner
 
 
-
-
 #
 # Модуль os
 #
@@ -138,13 +138,16 @@ def get_file_list(dir_path):
     print(f'Список файлов в папке: {file_list}')
     return file_list
 
+
 def print_current_directory():
     '''Получить текущую директорию'''
     print(f'Текущая директория {os.getcwd()}')
 
-def create_folder(path)
+
+def create_folder(path):
     '''Создать папку'''
-    os.mkdir(path) # указать путь
+    os.mkdir(path)  # указать путь
+
 
 def get_full_path(path, file):
     '''Склеить путь из папки и файла'''
@@ -166,28 +169,67 @@ def count_python(path=r'C:\Python'):
     print('exe_files'.ljust(10), res['exe_files'])
 
 
-
-
-
-
 #
-#Модуль datetime
+# Модуль datetime
 #
-'''Получить текущую дату +5 дней в формате ДД.ММ.ГГ'''
+from datetime import datetime
 
 
-'''Получить текущую дату в формате ДД.ММ.ГГГГ'''
+def five_days_plus():
+    '''Получить текущую дату +5 дней в формате ДД.ММ.ГГ'''
+    from datetime import datetime
+    n = datetime.today()
+    new_date = n.replace(day=n.day + 5)
+    print(new_date.strftime('%d.%m.%y'))
 
-'''На входе есть строка '03.05.13' надо к этой дате прибавить 10 дней и вывести в формате ДД.ММ.ГГГГ'''
 
-'''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть первым днем месяца'''
+def current_date():
+    '''Получить текущую дату в формате ДД.ММ.ГГГГ'''
+    from datetime import datetime
+    return datetime.today().strftime('%d.%m.%y')
 
-'''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть последним днем месяца'''
 
-'''Прибавить к любой дате 1 месяц и вывести в формате ДД.ММ.ГГГГ'''
+def ten_days_plus(n):
+    from datetime import datetime
+    '''На входе есть строка '03.05.13' надо к этой дате прибавить 10 дней и вывести в формате ДД.ММ.ГГГГ'''
+    n = datetime(n)
+    new_date = n.replace(day=n.day + 10)
+    return new_date
 
-'''Написать функцию change_month, которая к переданной дате прибавляет/вычитает переданное кол-во месяцев.
-Например:
-   change_month(’12.12.12’, 7) -> ’12.07.13’ 
-   change_month(’01.11.10’, -5) -> ’01.06.10’ 
-'''
+
+def first_day_of_month():
+    '''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть первым днем месяца'''
+    from datetime import datetime
+    n = datetime.today()
+    print(n.replace(day=1).strftime('%d.%m.%y'))
+
+
+def last_day_of_month():
+    '''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть последним днем месяца'''
+    from datetime import datetime
+    n = datetime.today()
+    new_date = n.replace(day=(n.replace(month=n.month + 1) - n).days)
+    print(new_date.strftime('%d.%m.%y'))
+
+
+def one_month_plus():
+    '''Прибавить к любой дате 1 месяц и вывести в формате ДД.ММ.ГГГГ'''
+    from datetime import datetime
+    n = datetime.today()
+    new_date = n.replace(month=n.month + 1)
+    print(new_date.strftime('%d.%m.%y'))
+
+
+def change_month(dmy, n):
+    '''Написать функцию change_month, которая к переданной дате прибавляет/вычитает переданное кол-во месяцев.
+    Например:
+       change_month(’12.12.12’, 7) -> ’12.07.13’
+       change_month(’01.11.10’, -5) -> ’01.06.10’
+    '''
+    from datetime import date
+    dmy = dmy.split('.')
+    dmy_convert = date(day=int(dmy[0]), month=int(dmy[1]), year=int(dmy[2]))
+    new_date = dmy_convert.replace(month=(dmy_convert.month + n) % 12,
+                                   year=dmy_convert.year + (n + dmy_convert.month) // 12)
+
+    print(new_date.strftime('%d.%m.%y'))
