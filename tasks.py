@@ -113,8 +113,6 @@ def count_lucky_tickets() -> int:
     return sum(map(lambda x: x ** 2, sums))
 
 
-
-
 def func_time(func):
     '''Напишите декоратор func_time, который подсчитывает и выводит сколько времени выполняется функция, обернутая в него.'''
     from datetime import datetime
@@ -126,14 +124,16 @@ def func_time(func):
 
     return inner
 
+
 @func_time
 def count_lucky_tickets_12() -> int:
     '''Напишите функцию, которая подсчитывает количество счастливых шестизначных билетов'''
-    sums = [0 for i in range(0,55)]
+    sums = [0 for i in range(0, 55)]
     for i in range(0, 1000000):
         sum_6 = i % 10 + i % 100 // 10 + i % 1000 // 100 + i % 10000 // 1000 + i % 100000 // 10000 + i // 100000
         sums[sum_6] += 1
-    print("\nКоличество 12-значных счастливых билетов: ",  sum(map(lambda x: x ** 2, sums)))
+    print("\nКоличество 12-значных счастливых билетов: ", sum(map(lambda x: x ** 2, sums)))
+
 
 #
 # Модуль os
@@ -154,7 +154,6 @@ def get_file_list(dir_path):
 print(f'Текущая директория {os.getcwd()}')
 
 
-
 def create_folder(path):
     '''Создать папку'''
     try:
@@ -162,6 +161,7 @@ def create_folder(path):
         print('Папка создана')
     except FileExistsError:
         print('Невозможно создать папку, тк папка существует')
+
 
 '''Склеить путь из папки и файла'''
 print(os.path.join(os.getcwd(), 'tests.py'))
@@ -183,13 +183,9 @@ def count_python(path=r'C:\Python'):
         file.write(str('\nexe_files'.ljust(13) + str(res['exe_files'])))
 
 
-
-
-
 #
 # Модуль datetime
 #
-from datetime import datetime
 
 
 def five_days_plus():
@@ -197,56 +193,63 @@ def five_days_plus():
     from datetime import datetime
     n = datetime.today()
     new_date = n.replace(day=n.day + 5)
-    print(new_date.strftime('%d.%m.%y'))
+    return new_date.strftime('%d.%m.%y')
 
 
 def current_date():
     '''Получить текущую дату в формате ДД.ММ.ГГГГ'''
     from datetime import datetime
-    return datetime.today().strftime('%d.%m.%y')
+    return datetime.today().strftime('%d.%m.%Y')
 
 
 def ten_days_plus(n):
     from datetime import datetime
     '''На входе есть строка '03.05.13' надо к этой дате прибавить 10 дней и вывести в формате ДД.ММ.ГГГГ'''
-    n = datetime(n)
+    n = datetime.strptime(n, '%d.%m.%y')
     new_date = n.replace(day=n.day + 10)
-    return new_date
+    return new_date.strftime('%d.%m.%Y')
 
 
-def first_day_of_month():
+def first_day_of_month(any_date=None):
     '''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть первым днем месяца'''
     from datetime import datetime
-    n = datetime.today()
-    print(n.replace(day=1).strftime('%d.%m.%y'))
+    if any_date != None:
+        n = datetime.strptime(any_date, '%d.%m.%y')
+    else:
+        n = datetime.today()
+    return n.replace(day=1).strftime('%d.%m.%y')
 
 
-def last_day_of_month():
+def last_day_of_month(any_date=None):
     '''Вывести дату в формате ДД.ММ.ГГ, эта дата должна быть последним днем месяца'''
     from datetime import datetime
-    n = datetime.today()
+    if any_date != None:
+        n = datetime.strptime(any_date, '%d.%m.%y')
+    else:
+        n = datetime.today()
     new_date = n.replace(day=(n.replace(month=n.month + 1) - n).days)
-    print(new_date.strftime('%d.%m.%y'))
+    return new_date.strftime('%d.%m.%y')
 
 
-def one_month_plus():
+def one_month_plus(any_date=None):
     '''Прибавить к любой дате 1 месяц и вывести в формате ДД.ММ.ГГГГ'''
     from datetime import datetime
-    n = datetime.today()
-    new_date = n.replace(month=n.month + 1)
-    print(new_date.strftime('%d.%m.%y'))
+    if any_date != None:
+        n = datetime.strptime(any_date, '%d.%m.%y')
+    else:
+        n = datetime.today()
+    new_date = n.replace(month=(n.month + 1)% 12, year=n.year + (n.month + 1) // 12)
+    return new_date.strftime('%d.%m.%y')
 
 
 def change_month(dmy, n):
+    from datetime import datetime
     '''Написать функцию change_month, которая к переданной дате прибавляет/вычитает переданное кол-во месяцев.
     Например:
-       change_month(’12.12.12’, 7) -> ’12.07.13’
-       change_month(’01.11.10’, -5) -> ’01.06.10’
+       change_month(’12.12.2012’, 7) -> ’12.07.13’
+       change_month(’01.11.2010’, -5) -> ’01.06.10’
     '''
-    from datetime import date
-    dmy = dmy.split('.')
-    dmy_convert = date(day=int(dmy[0]), month=int(dmy[1]), year=int(dmy[2]))
-    new_date = dmy_convert.replace(month=(dmy_convert.month + n) % 12,
-                                   year=dmy_convert.year + (n + dmy_convert.month) // 12)
+    dmy = datetime.strptime(dmy, '%d.%m.%Y')
+    new_date = dmy.replace(month=(dmy.month + n) % 12, year=dmy.year + (n + dmy.month) // 12)
 
-    print(new_date.strftime('%d.%m.%y'))
+    return new_date.strftime('%d.%m.%y')
