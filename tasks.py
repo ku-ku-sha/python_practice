@@ -56,46 +56,34 @@ def get_file_name(n: str) -> Union[str, int]:
         return -1
 
 
-def swap_min_max(n: list) -> Union[int, list]:
+def swap_min_max(n: list) -> Union[int,list] :
     '''Поменять местами самый большой и самый маленький элементы списка
     Функция позволяет обрабатывать списки строк и списки чисел'''
     if isinstance(n, list):
         type_n = str(type(n[0])).split("'")[1]
-        match type_n:
-            case 'str':
-                check_all = list(map(lambda x: type(x) == str,
-                                     n))  # проверка: все элементы можно сравнить с начальным (вариант с циклом менее затратный тк прерывается при нахождении 1го эл-та, не соответствующего условию, представлен в ветке ---)
-                if all(check_all):
-                    min_el = min(n)
-                    max_el = max(n)
-                    res = n[:]
-                    print(n.index(min_el), max_el)
-                    res[n.index(min_el)], res[n.index(max_el)] = res[n.index(max_el)], res[
-                        n.index(min_el)]  # меняем местами мин и макс
-                    return res
-                else:
-                    print('List elements cannot be compared')
-                    return -1
-            case 'int' | 'float':
-                check_all = list(map(lambda x: type(x) in (int, float), n))
-                if all(check_all):
-                    min_el = min(n)
-                    max_el = max(n)
-                    res = n[:]
-                    print(n.index(min_el), max_el)
-                    res[n.index(min_el)], res[n.index(max_el)] = res[n.index(max_el)], res[
-                        n.index(min_el)]  # меняем местами мин и макс
-                    return res
-                else:
-                    print('List elements cannot be compared')
-                    return -1
-            case _:
-                print('List elements cannot be compared')
-                return -1
+        if type_n == 'str':
+            check_all = list(map(lambda x: type(x) == str,
+                                 n))  # проверка: все элементы можно сравнить с начальным (вариант с циклом менее затратный тк прерывается при нахождении 1го эл-та, не соответствующего условию, представлен в ветке ---)
+        elif type_n in ('int', 'float'):
+            check_all = list(map(lambda x: type(x) in (int, float), n))
+        else:
+            print('List elements cannot be compared')
+            return -1
+
+        if all(check_all):
+            min_el = min(n)
+            max_el = max(n)
+            res = n[:]
+            res[n.index(min_el)], res[n.index(max_el)] = res[n.index(max_el)], res[
+                n.index(min_el)]  # меняем местами мин и макс
+            return res
+        else:
+            print('List elements cannot be compared')
+            return -1
+
     else:
         print('Invalid input type (List required)')
         return -1
-
 
 def most_expensive_product(n: list):
     ''' Дан список словарей: [{“наименование”: “Спички”, “цена”: 1},  {“наименование”: “Лук”, “цена”: 37},  … , {“наименование”: str, “цена”: int}]
