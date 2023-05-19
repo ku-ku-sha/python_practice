@@ -23,7 +23,7 @@ def phone_number(n: str):
     Например: 8-999-777-1111, +7 999 333 2222, +7 999-555-11-11'''
     from re import fullmatch
     invalid_symbols = ''.join(filter(lambda x: x not in '0123456789+- ', n))
-    numbers = ''.join(filter(lambda x: x.isalpha(), n))
+    numbers = ''.join(filter(lambda x: x.isdigit(), n))
     if invalid_symbols != '' or len(
             numbers) != 11:  # данные не содержат символов, кроме цифр, пробелов, символов "+" и "-", количество цифр соответствует формату
         print('Invalid phone number')
@@ -60,7 +60,8 @@ def get_file_name(n: str) -> Union[str, int]:
 def swap_min_max(n: list) -> Union[int, list]:
     '''Поменять местами самый большой и самый маленький элементы списка
     Функция позволяет обрабатывать списки строк и списки чисел'''
-    if isinstance(n, list):
+
+    if isinstance(n, list) and len(n) >= 2:
         type_n = str(type(n[0])).split("'")[1]
         if type_n == 'str':
             check_all = list(map(lambda x: type(x) == str,
@@ -83,7 +84,7 @@ def swap_min_max(n: list) -> Union[int, list]:
             return -1
 
     else:
-        print('Invalid input type (List required)')
+        print('Invalid input data (List required)')
         return -1
 
 
@@ -112,6 +113,8 @@ def count_lucky_tickets() -> int:
     return sum(map(lambda x: x ** 2, sums))
 
 
+
+
 def func_time(func):
     '''Напишите декоратор func_time, который подсчитывает и выводит сколько времени выполняется функция, обернутая в него.'''
     from datetime import datetime
@@ -119,10 +122,18 @@ def func_time(func):
         start_time = datetime.now()
         func(*args, **kwargs)
         end_time = datetime.now()
-        print(f'Функция {func.__name__} выполнялась {end_time - start_time}')
+        print(f'\nФункция {func.__name__} выполнялась {end_time - start_time}')
 
     return inner
 
+@func_time
+def count_lucky_tickets_12() -> int:
+    '''Напишите функцию, которая подсчитывает количество счастливых шестизначных билетов'''
+    sums = [0 for i in range(0,55)]
+    for i in range(0, 1000000):
+        sum_6 = i % 10 + i % 100 // 10 + i % 1000 // 100 + i % 10000 // 1000 + i % 100000 // 10000 + i // 100000
+        sums[sum_6] += 1
+    print("\nКоличество 12-значных счастливых билетов: ",  sum(map(lambda x: x ** 2, sums)))
 
 #
 # Модуль os
@@ -139,19 +150,21 @@ def get_file_list(dir_path):
     return file_list
 
 
-def print_current_directory():
-    '''Получить текущую директорию'''
-    print(f'Текущая директория {os.getcwd()}')
+'''Получить текущую директорию'''
+print(f'Текущая директория {os.getcwd()}')
+
 
 
 def create_folder(path):
     '''Создать папку'''
-    os.mkdir(path)  # указать путь
+    try:
+        os.mkdir(path)  # указать путь
+        print('Папка создана')
+    except FileExistsError:
+        print('Невозможно создать папку, тк папка существует')
 
-
-def get_full_path(path, file):
-    '''Склеить путь из папки и файла'''
-    print(os.path.join(path, file))
+'''Склеить путь из папки и файла'''
+print(os.path.join(os.getcwd(), 'tests.py'))
 
 
 def count_python(path=r'C:\Python'):
@@ -163,10 +176,14 @@ def count_python(path=r'C:\Python'):
         res['files'] += len(i[2])
         res['py_files'] += len(list(filter(lambda x: x.endswith('.py'), i[2])))
         res['exe_files'] += len(list(filter(lambda x: x.endswith('.exe'), i[2])))
-    print('folders'.ljust(10), res['folders'] - 1)
-    print('files'.ljust(10), res['files'])
-    print('py_files'.ljust(10), res['py_files'])
-    print('exe_files'.ljust(10), res['exe_files'])
+    with open('result.txt', 'w') as file:
+        file.write(str('folders'.ljust(12) + str(res['folders'] - 1)))
+        file.write(str('\nfiles'.ljust(13) + str(res['files'])))
+        file.write(str('\npy_files'.ljust(13) + str(res['py_files'])))
+        file.write(str('\nexe_files'.ljust(13) + str(res['exe_files'])))
+
+
+
 
 
 #
