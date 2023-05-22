@@ -39,21 +39,12 @@ def phone_number(n: str):
 def get_file_name(n: str) -> Union[str, int]:
     '''Дана строка, содержащая полное имя файла (например, C:\development\inside\test-project_management\inside\myfile.txt'). Выделите из этой строки имя файла без расширения
     Полное имя файла указывается в формате ОС Windows'''
-    try:
-        if '\\' not in n:
-            print('Invalid full file name')  # при отсутствии слешей полный путь к файлу считается некорректным
-            return ''
-        else:
-            result = n.split('\\')
-            if '.' not in result[-1] or result[-1][
-                0] == '.':  # при отсутствии точки или если точка в начале, последнее значение является именем папки
-                print('File name not found')
-                return ''
-            else:
-                return result[-1].split('.')[0]
-
-    except TypeError:
-        print('Invalid input type')
+    from os import path
+    p = path.abspath(n)
+    if path.isfile(p):
+        return path.basename(p)
+    else:
+        print('File name not found')
         return -1
 
 
@@ -62,12 +53,11 @@ def swap_min_max(n: list) -> Union[int, list]:
     Функция позволяет обрабатывать списки строк и списки чисел'''
 
     if isinstance(n, list) and len(n) >= 2:
-        type_n = str(type(n[0])).split("'")[1]
-        if type_n == 'str':
+        if type(n[0]) == str:
             check_all = list(map(lambda x: type(x) == str,
                                  n))  # проверка: все элементы можно сравнить с начальным (вариант с циклом менее затратный тк прерывается при нахождении 1го эл-та, не соответствующего условию, представлен в ветке ---)
-        elif type_n in ('int', 'float'):
-            check_all = list(map(lambda x: type(x) in (int, float), n))
+        elif type(n[0]) == int or type(n[0]) == float:
+            check_all = list(map(lambda x: type(x) == int or type(x) == float, n))
         else:
             print('List elements cannot be compared')
             return -1
@@ -91,48 +81,53 @@ def swap_min_max(n: list) -> Union[int, list]:
 def most_expensive_product(n: list):
     ''' Дан список словарей: [{“наименование”: “Спички”, “цена”: 1},  {“наименование”: “Лук”, “цена”: 37},  … , {“наименование”: str, “цена”: int}]
     Найти ТОП-2 самых дорогих товаров и вывести в том же формате.'''
-    if len(n) <= 2:
-        return n
-    else:
-        result = []
-        most_expensive_prod = max(n, key=lambda x: x['цена'])  # поиск самого дорого товара
-        result.append(most_expensive_prod)  # добавление в список результатов
-        del n[n.index(most_expensive_prod)]  # удаление найденного из исходного списка
-        most_expensive_prod = max(n, key=lambda x: x['цена'])
-        result.append(most_expensive_prod)
-        return result
-
-
-def count_lucky_tickets() -> int:
-    '''Напишите функцию, которая подсчитывает количество счастливых шестизначных билетов'''
-    sums = [0 for i in range(0,
-                             28)]  # максимальная сумма 3 чисел 0-9 = 27, минимальная = 0. Индекс списка - Сумма, значение - количество вариантов получения этой суммы из 3 чисел
-    for i in range(0, 1000):
-        sum_3 = i % 10 + i % 100 // 10 + i // 100
-        sums[sum_3] += 1
-    return sum(map(lambda x: x ** 2, sums))
+    res = []
+    most_expensive_prod = max(n, key=lambda x: x['цена'])
+    res.append(most_expensive_prod)
+    ind = n.index(most_expensive_prod)
+    most_expensive_prod = max(n[:ind:] + n[ind + 1::], key=lambda x: x['цена'])
+    ind = n.index(most_expensive_prod)
+    res.append(most_expensive_prod)
+    return res
 
 
 def func_time(func):
     '''Напишите декоратор func_time, который подсчитывает и выводит сколько времени выполняется функция, обернутая в него.'''
     from datetime import datetime
+    from datetime import time
     def inner(*args, **kwargs):
         start_time = datetime.now()
-        func(*args, **kwargs)
+        result = func(*args, **kwargs)
         end_time = datetime.now()
-        print(f'\nФункция {func.__name__} выполнялась {end_time - start_time}')
+        tmp = end_time - start_time
+        print(f'\n\n\nФункция {func.__name__} выполнялась {tmp.seconds // 60}:{tmp.seconds % 60}:{tmp.microseconds}.')
+        return result
 
     return inner
 
 
 @func_time
-def count_lucky_tickets_12() -> int:
+def count_lucky_tickets(k):
     '''Напишите функцию, которая подсчитывает количество счастливых шестизначных билетов'''
-    sums = [0 for i in range(0, 55)]
-    for i in range(0, 1000000):
-        sum_6 = i % 10 + i % 100 // 10 + i % 1000 // 100 + i % 10000 // 1000 + i % 100000 // 10000 + i // 100000
-        sums[sum_6] += 1
-    print("\nКоличество 12-значных счастливых билетов: ", sum(map(lambda x: x ** 2, sums)))
+
+    def sum_list(n):
+        if n == 1:
+            return [1 for _ in range(0, 10)]
+        else:
+            tmp = [1, 1]
+            for i in range(1, n * 9 // 2 + 1 * (n % 2 != 0)):
+                if i <= 9:
+                    tmp_sum = sum(sum_list(n - 1)[:i + 1])
+                else:
+                    tmp_sum = sum(sum_list(n - 1)[i - 9:i + 1])
+                tmp.insert(i, tmp_sum)
+                tmp.insert(i, tmp_sum)
+                if n % 2 == 0 and i == n * 9 // 2 - 1:
+                    tmp.insert(i + 1, sum(sum_list(n - 1)[i - 8:i + 2]))
+            return tmp
+
+    t = [i ** 2 for i in sum_list(k // 2)]
+    return sum(t)
 
 
 #
@@ -238,7 +233,7 @@ def one_month_plus(any_date=None):
         n = datetime.strptime(any_date, '%d.%m.%y')
     else:
         n = datetime.today()
-    new_date = n.replace(month=(n.month + 1)% 12, year=n.year + (n.month + 1) // 12)
+    new_date = n.replace(month=(n.month + 1) % 12, year=n.year + (n.month + 1) // 12)
     return new_date.strftime('%d.%m.%y')
 
 
@@ -253,3 +248,6 @@ def change_month(dmy, n):
     new_date = dmy.replace(month=(dmy.month + n) % 12, year=dmy.year + (n + dmy.month) // 12)
 
     return new_date.strftime('%d.%m.%y')
+
+
+count_lucky_tickets(2)
