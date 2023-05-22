@@ -96,11 +96,12 @@ def func_time(func):
     from datetime import datetime
     from datetime import time
     def inner(*args, **kwargs):
-        start_time = datetime.now()
+        start_time = datetime.today()
         result = func(*args, **kwargs)
-        end_time = datetime.now()
+        end_time = datetime.today()
         tmp = end_time - start_time
-        print(f'\n\n\nФункция {func.__name__} выполнялась {tmp.seconds // 60}:{tmp.seconds % 60}:{tmp.microseconds}.')
+        print(
+            f'\n\n\nФункция {func.__name__} выполнялась {str(tmp.seconds // 3600).zfill(2)}:{str(tmp.seconds // 60).zfill(2)}:{str(tmp.seconds % 60).zfill(2)}.{str(tmp.microseconds).zfill(2)}')
         return result
 
     return inner
@@ -109,25 +110,21 @@ def func_time(func):
 @func_time
 def count_lucky_tickets(k):
     '''Напишите функцию, которая подсчитывает количество счастливых шестизначных билетов'''
+    def new_sum_list(sum_list):
+        new_len = len(sum_list) + 9
+        new_sum_list = []
+        for i in range(0, new_len):
+            tmp = 0
+            if i < 10:
+                new_sum_list.append(sum(sum_list[:i + 1]))
+            else:
+                new_sum_list.append(sum(sum_list[i - 9:i + 1]))
+        return new_sum_list
 
-    def sum_list(n):
-        if n == 1:
-            return [1 for _ in range(0, 10)]
-        else:
-            tmp = [1, 1]
-            for i in range(1, n * 9 // 2 + 1 * (n % 2 != 0)):
-                if i <= 9:
-                    tmp_sum = sum(sum_list(n - 1)[:i + 1])
-                else:
-                    tmp_sum = sum(sum_list(n - 1)[i - 9:i + 1])
-                tmp.insert(i, tmp_sum)
-                tmp.insert(i, tmp_sum)
-                if n % 2 == 0 and i == n * 9 // 2 - 1:
-                    tmp.insert(i + 1, sum(sum_list(n - 1)[i - 8:i + 2]))
-            return tmp
-
-    t = [i ** 2 for i in sum_list(k // 2)]
-    return sum(t)
+    sum_list = [1 for _ in range(10)]
+    for i in range(0, k // 2 - 1):
+        sum_list = new_sum_list(sum_list)
+    return sum(map(lambda x: x ** 2, sum_list))
 
 
 #
